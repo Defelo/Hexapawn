@@ -43,9 +43,9 @@ def apply_move(state: BOARD, move: MOVE):
 def check_win(state: BOARD, computers_turn: bool) -> int:
     if any(x in state[0] for x in (1, 2, 3)):
         return 1
-    if 2 in state[2]:
+    if 7 in state[2]:
         return 2
-    if not any(2 in l for l in state):
+    if not any(7 in l for l in state):
         return 1
     if not any(x in l for l in state for x in (1, 2, 3)):
         return 2
@@ -65,7 +65,7 @@ def print_board(state: BOARD):
         print(row)
 
 
-def ask_move(state: BOARD) -> MOVE:
+def show_possible_moves(state: BOARD) -> List[MOVE]:
     moves: List[str] = stringify_board(state)
     width: int = max(map(len, moves))
     height: int = len(moves)
@@ -73,23 +73,17 @@ def ask_move(state: BOARD) -> MOVE:
     for i in range(height):
         moves[i] = moves[i].ljust(width + 6)
 
-    possible_moves = possible_player_moves(state)
+    possible_moves: List[MOVE] = possible_player_moves(state)
     for i, move in enumerate(possible_moves):
-        state = [[*l] for l in state]
-        apply_move(state, move)
-        for j, row in enumerate(stringify_board(state)):
+        s: BOARD = [[*l] for l in state]
+        apply_move(s, move)
+        for j, row in enumerate(stringify_board(s)):
             moves[j] += ["   ", f"{i + 1}) "][j == 0] + row.ljust(width + 4)
 
     for row in moves:
         print(row)
 
-    while True:
-        inp: str = input(">> ")
-        if not inp.isnumeric():
-            continue
-        index: int = int(inp) - 1
-        if 0 <= index < len(possible_moves):
-            return possible_moves[index]
+    return possible_moves
 
 
 def game():
@@ -98,6 +92,22 @@ def game():
         [0, 0, 0],
         [1, 2, 3]
     ]
+    while True:
+        moves: List[MOVE] = show_possible_moves(board)
+        move: str = input(">> ")
+        if move.lower() in ["q", "exit", "quit"]:
+            exit()
+        if not move.isnumeric():
+            continue
+        move: int = int(move) - 1
+        if not 0 <= move <= 2:
+            continue
+        apply_move(board, moves[move])
+        winner: int = check_win(board, True)
+        if winner:
+            print_board(board)
+            print(["Player", "Computer"][winner - 1], " wins the game!")
+            break
 
 
 if __name__ == '__main__':
