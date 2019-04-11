@@ -1,3 +1,4 @@
+import random
 from typing import List, Tuple
 
 BOARD = List[List[int]]
@@ -86,6 +87,10 @@ def show_possible_moves(state: BOARD) -> List[MOVE]:
     return possible_moves
 
 
+def get_computers_move(state: BOARD) -> MOVE:
+    return random.choice(possible_computer_moves(state))
+
+
 def game():
     board = [
         [7, 7, 7],
@@ -100,10 +105,17 @@ def game():
         if not move.isnumeric():
             continue
         move: int = int(move) - 1
-        if not 0 <= move <= 2:
+        if not 0 <= move < len(moves):
             continue
         apply_move(board, moves[move])
         winner: int = check_win(board, True)
+        if winner:
+            print_board(board)
+            print(["Player", "Computer"][winner - 1], " wins the game!")
+            break
+
+        apply_move(board, get_computers_move(board))
+        winner: int = check_win(board, False)
         if winner:
             print_board(board)
             print(["Player", "Computer"][winner - 1], " wins the game!")
