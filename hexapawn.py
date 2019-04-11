@@ -5,6 +5,10 @@ BOARD = List[List[int]]
 MOVE = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
+def copy_board(state: BOARD) -> BOARD:
+    return [[*row] for row in state]
+
+
 def possible_player_moves(state: BOARD) -> List[MOVE]:
     out: List[MOVE] = []
     for i in range(2, 0, -1):
@@ -76,7 +80,7 @@ def show_possible_moves(state: BOARD, possible_moves: List[MOVE], numbers: bool,
         moves[i] = moves[i].ljust(width + 6)
 
     for i, move in enumerate(possible_moves):
-        s: BOARD = [[*l] for l in state]
+        s: BOARD = copy_board(state)
         apply_move(s, move)
         for j, row in enumerate(stringify_board(s)):
             if numbers:
@@ -87,8 +91,14 @@ def show_possible_moves(state: BOARD, possible_moves: List[MOVE], numbers: bool,
         print([" " * len(text), text][i == 0] + row)
 
 
+memory = {}
+
+
 def get_computers_move(state: BOARD) -> MOVE:
-    return random.choice(possible_computer_moves(state))
+    board = tuple(i for row in state for i in row)
+    if board not in memory:
+        memory[board] = possible_computer_moves(state)
+    return random.choice(memory[board])
 
 
 def game():
@@ -97,6 +107,8 @@ def game():
         [0, 0, 0],
         [1, 1, 1]
     ]
+    last_state: BOARD = None
+    last_computer_move: MOVE = None
     while True:
         moves: List[MOVE] = possible_player_moves(board)
         show_possible_moves(board, moves, True, "")
@@ -111,19 +123,32 @@ def game():
         apply_move(board, moves[move])
         winner: int = check_win(board, True)
         if winner:
+            if winner == 1 and last_state is not None:
+                stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
+                stored_moves.remove(last_computer_move)
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
             break
 
         move: MOVE = get_computers_move(board)
+        board_copy: BOARD = copy_board(board)
         show_possible_moves(board, [move], False, "Computer:    ")
         apply_move(board, move)
         winner: int = check_win(board, False)
         if winner:
+            if winner == 1 and last_state is not None:
+                stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
+                stored_moves.remove(last_computer_move)
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
             break
+        last_state = board_copy
+        last_computer_move = move
 
 
 if __name__ == '__main__':
-    game()
+    gamenum: int = 1
+    while True:
+        print("=" * 30, f"Game #{gamenum}", "=" * 30)
+        game()
+        gamenum += 1
