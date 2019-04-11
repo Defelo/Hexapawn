@@ -101,7 +101,7 @@ def get_computers_move(state: BOARD) -> MOVE:
     return random.choice(memory[board])
 
 
-def game():
+def game() -> bool:
     board = [
         [2, 2, 2],
         [0, 0, 0],
@@ -128,7 +128,7 @@ def game():
                 stored_moves.remove(last_computer_move)
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
-            break
+            return winner == 1
 
         move: MOVE = get_computers_move(board)
         board_copy: BOARD = copy_board(board)
@@ -141,14 +141,16 @@ def game():
                 stored_moves.remove(last_computer_move)
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
-            break
+            return winner == 1
         last_state = board_copy
         last_computer_move = move
 
 
 if __name__ == '__main__':
+    history: str = ""
     gamenum: int = 1
     while True:
         print("=" * 30, f"Game #{gamenum}", "=" * 30)
-        game()
+        history += "CP"[game()]
+        print("History:", history)
         gamenum += 1
