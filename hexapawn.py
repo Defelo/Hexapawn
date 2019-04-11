@@ -152,5 +152,7 @@ if __name__ == '__main__':
     while True:
         print("=" * 30, f"Game #{gamenum}", "=" * 30)
         history += "CP"[game()]
-        print("History:", history)
+        print("History: ", history)
+        print("Player:  ", history.count("P"))
+        print("Computer:", history.count("C"))
         gamenum += 1
