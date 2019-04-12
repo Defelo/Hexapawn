@@ -123,7 +123,8 @@ def game() -> bool:
         apply_move(board, moves[move])
         winner: int = check_win(board, True)
         if winner:
-            if winner == 1 and last_state is not None:
+            assert winner == 1
+            if last_state is not None:
                 stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
                 stored_moves.remove(last_computer_move)
             print_board(board)
@@ -136,9 +137,8 @@ def game() -> bool:
         apply_move(board, move)
         winner: int = check_win(board, False)
         if winner:
-            if winner == 1 and last_state is not None:
-                stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
-                stored_moves.remove(last_computer_move)
+            assert winner == 2
+            memory[tuple(i for row in board_copy for i in row)] = [move]
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
             return winner == 1
