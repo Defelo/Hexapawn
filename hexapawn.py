@@ -107,8 +107,7 @@ def game() -> bool:
         [0, 0, 0],
         [1, 1, 1]
     ]
-    last_state: BOARD = None
-    last_computer_move: MOVE = None
+    computer_history: List[Tuple[BOARD, MOVE]] = []
     while True:
         moves: List[MOVE] = possible_player_moves(board)
         show_possible_moves(board, moves, True, "")
@@ -124,7 +123,8 @@ def game() -> bool:
         winner: int = check_win(board, True)
         if winner:
             assert winner == 1
-            if last_state is not None:
+            if computer_history:
+                last_state, last_computer_move = computer_history[-1]
                 stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
                 stored_moves.remove(last_computer_move)
             print_board(board)
@@ -142,8 +142,7 @@ def game() -> bool:
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
             return winner == 1
-        last_state = board_copy
-        last_computer_move = move
+        computer_history.append((board_copy, move))
 
 
 if __name__ == '__main__':
