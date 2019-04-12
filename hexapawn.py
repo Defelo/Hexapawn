@@ -123,10 +123,12 @@ def game() -> bool:
         winner: int = check_win(board, True)
         if winner:
             assert winner == 1
-            if computer_history:
-                last_state, last_computer_move = computer_history[-1]
-                stored_moves: List[MOVE] = memory[tuple(i for row in last_state for i in row)]
+            for i in range(len(computer_history))[::-1]:
+                last_state, last_computer_move = computer_history[i]
+                stored_moves: List[MOVE] = memory[tuple(j for row in last_state for j in row)]
                 stored_moves.remove(last_computer_move)
+                if stored_moves:
+                    break
             print_board(board)
             print(["Player", "Computer"][winner - 1], "wins the game!")
             return winner == 1
